@@ -1,0 +1,28 @@
+databaseType = "MySql"
+id = "f3f12dba-6b98-456a-be59-25146f182945"
+name = "Migrate Prod to V5"
+
+[flyway]
+locations = [ "filesystem:migrations" ]
+mixed = true
+outOfOrder = true
+schemaModelLocation = "schema-model"
+validateMigrationNaming = true
+
+  [flyway.check]
+  majorTolerance = 0
+
+[flywayDesktop]
+developmentEnvironment = "development"
+shadowEnvironment = "shadow"
+
+[redgateCompare]
+filterFile = "filter.rgf"
+
+[redgateCompare.mysql.options.ignores]
+ignoreNewlinesInTextObjects = "off"
+
+[environments.mygolf2_cls3_app]
+url = "jdbc:mysql://100.102.88.57:3306"
+schemas = [ "mygolf2_cls3_app" ]
+displayName = "Class App"
