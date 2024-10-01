@@ -21,3 +21,8 @@ filterFile = "filter.rgf"
 
 [redgateCompare.mysql.options.ignores]
 ignoreNewlinesInTextObjects = "off"
+
+[environments.mygolf2_cls3_app]
+url = "jdbc:mysql://100.102.88.57:3306"
+schemas = [ "mygolf2_cls3_app" ]
+displayName = "class"
