@@ -90,14 +90,14 @@ ALTER TABLE gs_stay_play_pkg_nearby add column images text;
 
 -- 14-Mar-2023
 ALTER TABLE gs_player_club_acct_statement add column statement_url varchar(1024);
-ALTER TABLE gs_player_club_acct_trxn modify column charge_id varchar(100);
-ALTER TABLE gs_player_club_acct_trxn add column charge_name varchar(255) after charge_id;
-ALTER TABLE gs_player_club_acct_trxn add column charge_context varchar(255) after fk_charge_by_player;
-ALTER TABLE gs_club_membership_charge add column first_transaction_date date;
-ALTER TABLE gs_club_membership_charge add column applicable_to char(1) not null default 'B';
+-- ALTER TABLE gs_player_club_acct_trxn modify column charge_id varchar(100);
+-- ALTER TABLE gs_player_club_acct_trxn add column charge_name varchar(255) after charge_id;
+-- ALTER TABLE gs_player_club_acct_trxn add column charge_context varchar(255) after fk_charge_by_player;
+-- ALTER TABLE gs_club_membership_charge add column first_transaction_date date;
+-- ALTER TABLE gs_club_membership_charge add column applicable_to char(1) not null default 'B';
 
 -- 21-Mar-2023
-ALTER TABLE gs_player_club_acct_trxn add column exclude char(1) default 'N' NOT NULL;
+# ALTER TABLE gs_player_club_acct_trxn add column exclude char(1) default 'N' NOT NULL;
 
 -- 23-Mar-2023
 ALTER TABLE gs_club_membership add column prevent_auto_suspension char(1) default 'N' NOT NULL;
@@ -286,8 +286,8 @@ ALTER TABLE gs_organizer ADD CONSTRAINT fk_organizer_ref_partner FOREIGN KEY (fk
 																																			 
 
 -- 2-Nov-2023
-alter table gs_player_round add column fk_buggy_assigned bigint;
-ALTER TABLE gs_player_round ADD CONSTRAINT fk_player_round_ref_buggy FOREIGN KEY (fk_buggy_assigned) REFERENCES gs_club_buggy (id) ON UPDATE Cascade ON DELETE Restrict;
+# alter table gs_player_round add column fk_buggy_assigned bigint;
+# ALTER TABLE gs_player_round ADD CONSTRAINT fk_player_round_ref_buggy FOREIGN KEY (fk_buggy_assigned) REFERENCES gs_club_buggy (id) ON UPDATE Cascade ON DELETE Restrict;
 alter table gs_player_round add column fk_caddie_assigned bigint;
 ALTER TABLE gs_club_caddy_assignment ADD CONSTRAINT fk_playerround_ref_caddie FOREIGN KEY (fk_player_round) REFERENCES gs_player_round (id) ON UPDATE Cascade ON DELETE Set null;
 
@@ -308,8 +308,8 @@ ALTER TABLE gs_competition_scorer_setup ADD CONSTRAINT fk_scorer_setup_ref_comp 
 
 
 -- 06-Dec-2023 : Online payment implementation for club membership
-alter table gs_player_club_acct_trxn add column fk_bill bigint;
-ALTER TABLE gs_player_club_acct_trxn ADD CONSTRAINT fk_plr_clb_act_trn_ref_bill FOREIGN KEY (fk_bill) REFERENCES gs_bill (bill_id) ON UPDATE Cascade ON DELETE Restrict;
+# alter table gs_player_club_acct_trxn add column fk_bill bigint;
+# ALTER TABLE gs_player_club_acct_trxn ADD CONSTRAINT fk_plr_clb_act_trn_ref_bill FOREIGN KEY (fk_bill) REFERENCES gs_bill (bill_id) ON UPDATE Cascade ON DELETE Restrict;
 
 DROP TABLE IF EXISTS gs_club_member_reminder;
 CREATE TABLE gs_club_member_reminder (
