@@ -1,4 +1,4 @@
-create view gsv_competition_status as select `c`.`id`                                                                        AS `id`,
+create or replace view gsv_competition_status as select `c`.`id`                                                                        AS `id`,
                                              `c`.`fk_club`                                                                   AS `fk_club`,
                                              `c`.`fk_organizer`                                                              AS `fk_organizer`,
                                              `c`.`tournament_name`                                                           AS `tournament_name`,

@@ -656,21 +656,21 @@ WHERE which_nine is null;
 update gs_scorecard set game_hole_no = course_hole_no + (gs_scorecard.which_nine -1 ) * 9
 WHERE gs_scorecard.game_hole_no is null;
  -- Find th discrepancy player rounds. Correct them or delete --
-select * FROM
-    (select pr.*,
-            ((SELECT count(*) FROM gs_game_course gc WHERE gc.fk_game_round = pr.fk_game_round) * 9) game_course_hole,
-            (select count(*) FROM gs_scorecard sc WHERE sc.fk_player_round = pr.id) scorecard_count
-     from gs_player_round pr
-     WHERE pr.status IN ('I', 'C')) temp
-WHERE scorecard_count > 0 AND game_course_hole <> scorecard_count;
+-- select * FROM
+--     (select pr.*,
+--             ((SELECT count(*) FROM gs_game_course gc WHERE gc.fk_game_round = pr.fk_game_round) * 9) game_course_hole,
+--             (select count(*) FROM gs_scorecard sc WHERE sc.fk_player_round = pr.id) scorecard_count
+--      from gs_player_round pr
+--      WHERE pr.status IN ('I', 'C')) temp
+-- WHERE scorecard_count > 0 AND game_course_hole <> scorecard_count;
 
--- Change the unique index
-alter table gs_scorecard
-    drop key IDX_gs_scorecard;
+-- -- Change the unique index
+-- alter table gs_scorecard
+--     drop key IDX_gs_scorecard;
 
-alter table gs_scorecard
-    add constraint IDX_gs_scorecard
-        unique (fk_player_round, game_hole_no);
+-- alter table gs_scorecard
+--     add constraint IDX_gs_scorecard
+--         unique (fk_player_round, game_hole_no);
 
 -- 27-Sep-2024: eInvoice for players
 ALTER TABLE gs_player add column e_invoice_option char(1) DEFAULT 'N' NOT NULL;
