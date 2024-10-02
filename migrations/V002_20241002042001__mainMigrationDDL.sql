@@ -266,7 +266,6 @@ ALTER TABLE gs_club_membership add column legal_name varchar(100);
 
 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 -- 13-Oct-2023 : Amenities and check-in/check-out
 ALTER TABLE gs_hotel add column check_in_time time;
