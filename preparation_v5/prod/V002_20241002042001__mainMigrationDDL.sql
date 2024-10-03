@@ -551,6 +551,7 @@ alter table gs_stay_and_play_package add column  non_local_price  char(1) NOT NU
 alter table gs_stay_and_play_adjustment add column is_tax char(1) NOT NULL default 'N' CHECK ( is_tax in ('Y', 'N') );
 
 -- League: Order Of Merit
+ALTER TABLE gs_league_season add column league_settings mediumtext;
 CREATE TABLE gs_league_competition_player_totals (
     id                       int(10) NOT NULL AUTO_INCREMENT,
     handicap                 smallint(6),
@@ -664,13 +665,13 @@ WHERE gs_scorecard.game_hole_no is null;
 --      WHERE pr.status IN ('I', 'C')) temp
 -- WHERE scorecard_count > 0 AND game_course_hole <> scorecard_count;
 
--- -- Change the unique index
--- alter table gs_scorecard
---     drop key IDX_gs_scorecard;
+-- Change the unique index
+alter table gs_scorecard
+    drop key IDX_gs_scorecard;
 
--- alter table gs_scorecard
---     add constraint IDX_gs_scorecard
---         unique (fk_player_round, game_hole_no);
+alter table gs_scorecard
+    add constraint IDX_gs_scorecard
+        unique (fk_player_round, game_hole_no);
 
 -- 27-Sep-2024: eInvoice for players
 ALTER TABLE gs_player add column e_invoice_option char(1) DEFAULT 'N' NOT NULL;

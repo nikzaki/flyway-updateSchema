@@ -89,7 +89,7 @@ ALTER TABLE gs_stay_play_pkg_nearby add column distance varchar(255);
 ALTER TABLE gs_stay_play_pkg_nearby add column images text;
 
 -- 14-Mar-2023
-# ALTER TABLE gs_player_club_acct_statement add column statement_url varchar(1024);
+ALTER TABLE gs_player_club_acct_statement add column statement_url varchar(1024);
 -- ALTER TABLE gs_player_club_acct_trxn modify column charge_id varchar(100);
 -- ALTER TABLE gs_player_club_acct_trxn add column charge_name varchar(255) after charge_id;
 -- ALTER TABLE gs_player_club_acct_trxn add column charge_context varchar(255) after fk_charge_by_player;
@@ -285,8 +285,8 @@ ALTER TABLE gs_organizer ADD CONSTRAINT fk_organizer_ref_partner FOREIGN KEY (fk
 																																			 
 
 -- 2-Nov-2023
-alter table gs_player_round add column fk_buggy_assigned bigint;
-ALTER TABLE gs_player_round ADD CONSTRAINT fk_player_round_ref_buggy FOREIGN KEY (fk_buggy_assigned) REFERENCES gs_club_buggy (id) ON UPDATE Cascade ON DELETE Restrict;
+# alter table gs_player_round add column fk_buggy_assigned bigint;
+# ALTER TABLE gs_player_round ADD CONSTRAINT fk_player_round_ref_buggy FOREIGN KEY (fk_buggy_assigned) REFERENCES gs_club_buggy (id) ON UPDATE Cascade ON DELETE Restrict;
 alter table gs_player_round add column fk_caddie_assigned bigint;
 ALTER TABLE gs_club_caddy_assignment ADD CONSTRAINT fk_playerround_ref_caddie FOREIGN KEY (fk_player_round) REFERENCES gs_player_round (id) ON UPDATE Cascade ON DELETE Set null;
 
@@ -307,8 +307,8 @@ ALTER TABLE gs_competition_scorer_setup ADD CONSTRAINT fk_scorer_setup_ref_comp 
 
 
 -- 06-Dec-2023 : Online payment implementation for club membership
-alter table gs_player_club_acct_trxn add column fk_bill bigint;
-ALTER TABLE gs_player_club_acct_trxn ADD CONSTRAINT fk_plr_clb_act_trn_ref_bill FOREIGN KEY (fk_bill) REFERENCES gs_bill (bill_id) ON UPDATE Cascade ON DELETE Restrict;
+# alter table gs_player_club_acct_trxn add column fk_bill bigint;
+# ALTER TABLE gs_player_club_acct_trxn ADD CONSTRAINT fk_plr_clb_act_trn_ref_bill FOREIGN KEY (fk_bill) REFERENCES gs_bill (bill_id) ON UPDATE Cascade ON DELETE Restrict;
 
 DROP TABLE IF EXISTS gs_club_member_reminder;
 CREATE TABLE gs_club_member_reminder (
@@ -665,13 +665,13 @@ WHERE gs_scorecard.game_hole_no is null;
 --      WHERE pr.status IN ('I', 'C')) temp
 -- WHERE scorecard_count > 0 AND game_course_hole <> scorecard_count;
 
--- Change the unique index
-alter table gs_scorecard
-    drop key IDX_gs_scorecard;
+-- -- Change the unique index
+-- alter table gs_scorecard
+--     drop key IDX_gs_scorecard;
 
-alter table gs_scorecard
-    add constraint IDX_gs_scorecard
-        unique (fk_player_round, game_hole_no);
+-- alter table gs_scorecard
+--     add constraint IDX_gs_scorecard
+--         unique (fk_player_round, game_hole_no);
 
 -- 27-Sep-2024: eInvoice for players
 ALTER TABLE gs_player add column e_invoice_option char(1) DEFAULT 'N' NOT NULL;
