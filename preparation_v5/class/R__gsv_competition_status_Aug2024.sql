@@ -1,0 +1,325 @@
+create or replace view gsv_competition_status as select `c`.`id`                                                                        AS `id`,
+                                             `c`.`fk_club`                                                                   AS `fk_club`,
+                                             `c`.`fk_organizer`                                                              AS `fk_organizer`,
+                                             `c`.`tournament_name`                                                           AS `tournament_name`,
+                                             `c`.`tournament_image`                                                          AS `tournament_image`,
+                                             `c`.`date_open`                                                                 AS `date_open`,
+                                             `c`.`date_close`                                                                AS `date_close`,
+                                             `c`.`date_start`                                                                AS `date_start`,
+                                             `c`.`date_end`                                                                  AS `date_end`,
+                                             `c`.`date_publish`                                                              AS `date_publish`,
+                                             `s`.`name`                                                                      AS `scoring_format`,
+                                             ifnull(`c`.`max_player`, 0)                                                     AS `total_available`,
+                                             (select count(0)
+                                              from `gs_competition_player`
+                                              where (`gs_competition_player`.`fk_competition` = `c`.`id`)) AS `total_registered`,
+                                             `c`.`status`                                                                    AS `competition_status`,
+                                             `c`.`competition_type`                                                          AS `competition_type`,
+                                             'Open'                                                                          AS `registration_status`,
+                                             1                                                                               AS `sort_order`,
+                                             (`c`.`date_start` - curdate())                                                  AS `date_order`,
+                                             `c`.`tournament_description`                                                    AS `tournament_description`,
+                                             `c`.`tournament_fee`                                                            AS `tournament_fee`,
+                                             `c`.`tournament_rules`                                                          AS `tournament_rules`,
+                                             `c`.`tournament_prize_total`                                                    AS `tournament_prize_total`,
+                                             `c`.`allow_gps`                                                                 AS `allow_gps`,
+                                             `c`.`max_player`                                                                AS `max_player`,
+                                             `c`.`max_round`                                                                 AS `max_round`,
+                                             `c`.`max_hole`                                                                  AS `max_hole`,
+                                             `c`.`show_leaderboard`                                                          AS `show_leaderboard`,
+                                             `c`.`allow_change_scorer`                                                       AS `allow_change_scorer`,
+                                             `c`.`is_private`                                                                AS `is_private`,
+                                             `c`.`is_team_event`                                                             AS `is_team_event`
+                                      from (`gs_competition` `c` left join `gs_scoring_format` `s` on ((
+                                        `c`.`fk_scoring_format` = `s`.`id`)))
+                                      where ((`c`.`status` = 'In Progress') and (`c`.`date_end` >= curdate()) and
+                                             (`c`.`date_close` >= curdate()))
+                                      union all select `c`.`id`                                                                        AS `id`,
+                                                       `c`.`fk_club`                                                                   AS `fk_club`,
+                                                       `c`.`fk_organizer`                                                              AS `fk_organizer`,
+                                                       `c`.`tournament_name`                                                           AS `tournament_name`,
+                                                       `c`.`tournament_image`                                                          AS `tournament_image`,
+                                                       `c`.`date_open`                                                                 AS `date_open`,
+                                                       `c`.`date_close`                                                                AS `date_close`,
+                                                       `c`.`date_start`                                                                AS `date_start`,
+                                                       `c`.`date_end`                                                                  AS `date_end`,
+                                                       `c`.`date_publish`                                                              AS `date_publish`,
+                                                       `s`.`name`                                                                      AS `scoring_format`,
+                                                       ifnull(`c`.`max_player`, 0)                                                     AS `total_available`,
+                                                       (select count(0)
+                                                        from `gs_competition_player`
+                                                        where (`gs_competition_player`.`fk_competition` = `c`.`id`)) AS `total_registered`,
+                                                       `c`.`status`                                                                    AS `competition_status`,
+                                                       `c`.`competition_type`                                                          AS `competition_type`,
+                                                       'Closed'                                                                        AS `registration_status`,
+                                                       1                                                                               AS `sort_order`,
+                                                       (`c`.`date_start` - curdate())                                                  AS `date_order`,
+                                                       `c`.`tournament_description`                                                    AS `tournament_description`,
+                                                       `c`.`tournament_fee`                                                            AS `tournament_fee`,
+                                                       `c`.`tournament_rules`                                                          AS `tournament_rules`,
+                                                       `c`.`tournament_prize_total`                                                    AS `tournament_prize_total`,
+                                                       `c`.`allow_gps`                                                                 AS `allow_gps`,
+                                                       `c`.`max_player`                                                                AS `max_player`,
+                                                       `c`.`max_round`                                                                 AS `max_round`,
+                                                       `c`.`max_hole`                                                                  AS `max_hole`,
+                                                       `c`.`show_leaderboard`                                                          AS `show_leaderboard`,
+                                                       `c`.`allow_change_scorer`                                                       AS `allow_change_scorer`,
+                                                       `c`.`is_private`                                                                AS `is_private`,
+                                                       `c`.`is_team_event`                                                             AS `is_team_event`
+                                                from (`gs_competition` `c` left join `gs_scoring_format` `s` on ((
+                                                  `c`.`fk_scoring_format` = `s`.`id`)))
+                                                where ((`c`.`status` = 'In Progress') and
+                                                       (`c`.`date_end` >= curdate()) and (`c`.`date_close` < curdate()))
+                                      union all select `c`.`id`                                                                        AS `id`,
+                                                       `c`.`fk_club`                                                                   AS `fk_club`,
+                                                       `c`.`fk_organizer`                                                              AS `fk_organizer`,
+                                                       `c`.`tournament_name`                                                           AS `tournament_name`,
+                                                       `c`.`tournament_image`                                                          AS `tournament_image`,
+                                                       `c`.`date_open`                                                                 AS `date_open`,
+                                                       `c`.`date_close`                                                                AS `date_close`,
+                                                       `c`.`date_start`                                                                AS `date_start`,
+                                                       `c`.`date_end`                                                                  AS `date_end`,
+                                                       `c`.`date_publish`                                                              AS `date_publish`,
+                                                       `s`.`name`                                                                      AS `scoring_format`,
+                                                       ifnull(`c`.`max_player`, 0)                                                     AS `total_available`,
+                                                       (select count(0)
+                                                        from `gs_competition_player`
+                                                        where (`gs_competition_player`.`fk_competition` = `c`.`id`)) AS `total_registered`,
+                                                       `c`.`status`                                                                    AS `competition_status`,
+                                                       `c`.`competition_type`                                                          AS `competition_type`,
+                                                       'Closed'                                                                        AS `registration_status`,
+                                                       1                                                                               AS `sort_order`,
+                                                       (`c`.`date_start` - curdate())                                                  AS `date_order`,
+                                                       `c`.`tournament_description`                                                    AS `tournament_description`,
+                                                       `c`.`tournament_fee`                                                            AS `tournament_fee`,
+                                                       `c`.`tournament_rules`                                                          AS `tournament_rules`,
+                                                       `c`.`tournament_prize_total`                                                    AS `tournament_prize_total`,
+                                                       `c`.`allow_gps`                                                                 AS `allow_gps`,
+                                                       `c`.`max_player`                                                                AS `max_player`,
+                                                       `c`.`max_round`                                                                 AS `max_round`,
+                                                       `c`.`max_hole`                                                                  AS `max_hole`,
+                                                       `c`.`show_leaderboard`                                                          AS `show_leaderboard`,
+                                                       `c`.`allow_change_scorer`                                                       AS `allow_change_scorer`,
+                                                       `c`.`is_private`                                                                AS `is_private`,
+                                                       `c`.`is_team_event`                                                             AS `is_team_event`
+                                                from (`gs_competition` `c` left join `gs_scoring_format` `s` on ((
+                                                  `c`.`fk_scoring_format` = `s`.`id`)))
+                                                where ((`c`.`status` = 'In Progress') and
+                                                       (`c`.`date_end` < curdate()) and (`c`.`date_close` < curdate()))
+                                      union all select `c`.`id`                                                                        AS `id`,
+                                                       `c`.`fk_club`                                                                   AS `fk_club`,
+                                                       `c`.`fk_organizer`                                                              AS `fk_organizer`,
+                                                       `c`.`tournament_name`                                                           AS `tournament_name`,
+                                                       `c`.`tournament_image`                                                          AS `tournament_image`,
+                                                       `c`.`date_open`                                                                 AS `date_open`,
+                                                       `c`.`date_close`                                                                AS `date_close`,
+                                                       `c`.`date_start`                                                                AS `date_start`,
+                                                       `c`.`date_end`                                                                  AS `date_end`,
+                                                       `c`.`date_publish`                                                              AS `date_publish`,
+                                                       `s`.`name`                                                                      AS `scoring_format`,
+                                                       ifnull(`c`.`max_player`, 0)                                                     AS `total_available`,
+                                                       (select count(0)
+                                                        from `gs_competition_player`
+                                                        where (`gs_competition_player`.`fk_competition` = `c`.`id`)) AS `total_registered`,
+                                                       `c`.`status`                                                                    AS `competition_status`,
+                                                       `c`.`competition_type`                                                          AS `competition_type`,
+                                                       'Open'                                                                          AS `registration_status`,
+                                                       3                                                                               AS `sort_order`,
+                                                       (`c`.`date_start` - curdate())                                                  AS `date_order`,
+                                                       `c`.`tournament_description`                                                    AS `tournament_description`,
+                                                       `c`.`tournament_fee`                                                            AS `tournament_fee`,
+                                                       `c`.`tournament_rules`                                                          AS `tournament_rules`,
+                                                       `c`.`tournament_prize_total`                                                    AS `tournament_prize_total`,
+                                                       `c`.`allow_gps`                                                                 AS `allow_gps`,
+                                                       `c`.`max_player`                                                                AS `max_player`,
+                                                       `c`.`max_round`                                                                 AS `max_round`,
+                                                       `c`.`max_hole`                                                                  AS `max_hole`,
+                                                       `c`.`show_leaderboard`                                                          AS `show_leaderboard`,
+                                                       `c`.`allow_change_scorer`                                                       AS `allow_change_scorer`,
+                                                       `c`.`is_private`                                                                AS `is_private`,
+                                                       `c`.`is_team_event`                                                             AS `is_team_event`
+                                                from (`gs_competition` `c` left join `gs_scoring_format` `s` on ((
+                                                  `c`.`fk_scoring_format` = `s`.`id`)))
+                                                where ((`c`.`status` = 'Upcoming') and
+                                                       (`c`.`date_open` <= curdate()) and
+                                                       (`c`.`date_close` >= curdate()) and
+                                                       (`c`.`date_end` >= curdate()))
+                                      union all select `c`.`id`                                                                        AS `id`,
+                                                       `c`.`fk_club`                                                                   AS `fk_club`,
+                                                       `c`.`fk_organizer`                                                              AS `fk_organizer`,
+                                                       `c`.`tournament_name`                                                           AS `tournament_name`,
+                                                       `c`.`tournament_image`                                                          AS `tournament_image`,
+                                                       `c`.`date_open`                                                                 AS `date_open`,
+                                                       `c`.`date_close`                                                                AS `date_close`,
+                                                       `c`.`date_start`                                                                AS `date_start`,
+                                                       `c`.`date_end`                                                                  AS `date_end`,
+                                                       `c`.`date_publish`                                                              AS `date_publish`,
+                                                       `s`.`name`                                                                      AS `scoring_format`,
+                                                       ifnull(`c`.`max_player`, 0)                                                     AS `total_available`,
+                                                       (select count(0)
+                                                        from `gs_competition_player`
+                                                        where (`gs_competition_player`.`fk_competition` = `c`.`id`)) AS `total_registered`,
+                                                       `c`.`status`                                                                    AS `competition_status`,
+                                                       `c`.`competition_type`                                                          AS `competition_type`,
+                                                       'Not Open Yet'                                                                  AS `registration_status`,
+                                                       3                                                                               AS `sort_order`,
+                                                       (`c`.`date_start` - curdate())                                                  AS `date_order`,
+                                                       `c`.`tournament_description`                                                    AS `tournament_description`,
+                                                       `c`.`tournament_fee`                                                            AS `tournament_fee`,
+                                                       `c`.`tournament_rules`                                                          AS `tournament_rules`,
+                                                       `c`.`tournament_prize_total`                                                    AS `tournament_prize_total`,
+                                                       `c`.`allow_gps`                                                                 AS `allow_gps`,
+                                                       `c`.`max_player`                                                                AS `max_player`,
+                                                       `c`.`max_round`                                                                 AS `max_round`,
+                                                       `c`.`max_hole`                                                                  AS `max_hole`,
+                                                       `c`.`show_leaderboard`                                                          AS `show_leaderboard`,
+                                                       `c`.`allow_change_scorer`                                                       AS `allow_change_scorer`,
+                                                       `c`.`is_private`                                                                AS `is_private`,
+                                                       `c`.`is_team_event`                                                             AS `is_team_event`
+                                                from (`gs_competition` `c` left join `gs_scoring_format` `s` on ((
+                                                  `c`.`fk_scoring_format` = `s`.`id`)))
+                                                where ((`c`.`status` = 'Upcoming') and (`c`.`date_open` > curdate()) and
+                                                       (`c`.`date_close` > curdate()) and (`c`.`date_end` >= curdate()))
+                                      union all select `c`.`id`                                                                        AS `id`,
+                                                       `c`.`fk_club`                                                                   AS `fk_club`,
+                                                       `c`.`fk_organizer`                                                              AS `fk_organizer`,
+                                                       `c`.`tournament_name`                                                           AS `tournament_name`,
+                                                       `c`.`tournament_image`                                                          AS `tournament_image`,
+                                                       `c`.`date_open`                                                                 AS `date_open`,
+                                                       `c`.`date_close`                                                                AS `date_close`,
+                                                       `c`.`date_start`                                                                AS `date_start`,
+                                                       `c`.`date_end`                                                                  AS `date_end`,
+                                                       `c`.`date_publish`                                                              AS `date_publish`,
+                                                       `s`.`name`                                                                      AS `scoring_format`,
+                                                       ifnull(`c`.`max_player`, 0)                                                     AS `total_available`,
+                                                       (select count(0)
+                                                        from `gs_competition_player`
+                                                        where (`gs_competition_player`.`fk_competition` = `c`.`id`)) AS `total_registered`,
+                                                       `c`.`status`                                                                    AS `competition_status`,
+                                                       `c`.`competition_type`                                                          AS `competition_type`,
+                                                       'Closed'                                                                        AS `registration_status`,
+                                                       3                                                                               AS `sort_order`,
+                                                       (`c`.`date_start` - curdate())                                                  AS `date_order`,
+                                                       `c`.`tournament_description`                                                    AS `tournament_description`,
+                                                       `c`.`tournament_fee`                                                            AS `tournament_fee`,
+                                                       `c`.`tournament_rules`                                                          AS `tournament_rules`,
+                                                       `c`.`tournament_prize_total`                                                    AS `tournament_prize_total`,
+                                                       `c`.`allow_gps`                                                                 AS `allow_gps`,
+                                                       `c`.`max_player`                                                                AS `max_player`,
+                                                       `c`.`max_round`                                                                 AS `max_round`,
+                                                       `c`.`max_hole`                                                                  AS `max_hole`,
+                                                       `c`.`show_leaderboard`                                                          AS `show_leaderboard`,
+                                                       `c`.`allow_change_scorer`                                                       AS `allow_change_scorer`,
+                                                       `c`.`is_private`                                                                AS `is_private`,
+                                                       `c`.`is_team_event`                                                             AS `is_team_event`
+                                                from (`gs_competition` `c` left join `gs_scoring_format` `s` on ((
+                                                  `c`.`fk_scoring_format` = `s`.`id`)))
+                                                where ((`c`.`status` = 'Upcoming') and (`c`.`date_open` < curdate()) and
+                                                       (`c`.`date_close` < curdate()) and (`c`.`date_end` >= curdate()))
+                                      union all select `c`.`id`                                                                        AS `id`,
+                                                       `c`.`fk_club`                                                                   AS `fk_club`,
+                                                       `c`.`fk_organizer`                                                              AS `fk_organizer`,
+                                                       `c`.`tournament_name`                                                           AS `tournament_name`,
+                                                       `c`.`tournament_image`                                                          AS `tournament_image`,
+                                                       `c`.`date_open`                                                                 AS `date_open`,
+                                                       `c`.`date_close`                                                                AS `date_close`,
+                                                       `c`.`date_start`                                                                AS `date_start`,
+                                                       `c`.`date_end`                                                                  AS `date_end`,
+                                                       `c`.`date_publish`                                                              AS `date_publish`,
+                                                       `s`.`name`                                                                      AS `scoring_format`,
+                                                       ifnull(`c`.`max_player`, 0)                                                     AS `total_available`,
+                                                       (select count(0)
+                                                        from `gs_competition_player`
+                                                        where (`gs_competition_player`.`fk_competition` = `c`.`id`)) AS `total_registered`,
+                                                       'Elapsed'                                                                       AS `competition_status`,
+                                                       `c`.`competition_type`                                                          AS `competition_type`,
+                                                       'Closed'                                                                        AS `registration_status`,
+                                                       5                                                                               AS `sort_order`,
+                                                       (curdate() - `c`.`date_start`)                                                  AS `date_order`,
+                                                       `c`.`tournament_description`                                                    AS `tournament_description`,
+                                                       `c`.`tournament_fee`                                                            AS `tournament_fee`,
+                                                       `c`.`tournament_rules`                                                          AS `tournament_rules`,
+                                                       `c`.`tournament_prize_total`                                                    AS `tournament_prize_total`,
+                                                       `c`.`allow_gps`                                                                 AS `allow_gps`,
+                                                       `c`.`max_player`                                                                AS `max_player`,
+                                                       `c`.`max_round`                                                                 AS `max_round`,
+                                                       `c`.`max_hole`                                                                  AS `max_hole`,
+                                                       `c`.`show_leaderboard`                                                          AS `show_leaderboard`,
+                                                       `c`.`allow_change_scorer`                                                       AS `allow_change_scorer`,
+                                                       `c`.`is_private`                                                                AS `is_private`,
+                                                       `c`.`is_team_event`                                                             AS `is_team_event`
+                                                from (`gs_competition` `c` left join `gs_scoring_format` `s` on ((
+                                                  `c`.`fk_scoring_format` = `s`.`id`)))
+                                                where ((`c`.`status` = 'Upcoming') and
+                                                       (`c`.`date_start` < curdate()) and (`c`.`date_end` < curdate()))
+                                      union all select `c`.`id`                                                                        AS `id`,
+                                                       `c`.`fk_club`                                                                   AS `fk_club`,
+                                                       `c`.`fk_organizer`                                                              AS `fk_organizer`,
+                                                       `c`.`tournament_name`                                                           AS `tournament_name`,
+                                                       `c`.`tournament_image`                                                          AS `tournament_image`,
+                                                       `c`.`date_open`                                                                 AS `date_open`,
+                                                       `c`.`date_close`                                                                AS `date_close`,
+                                                       `c`.`date_start`                                                                AS `date_start`,
+                                                       `c`.`date_end`                                                                  AS `date_end`,
+                                                       `c`.`date_publish`                                                              AS `date_publish`,
+                                                       `s`.`name`                                                                      AS `scoring_format`,
+                                                       ifnull(`c`.`max_player`, 0)                                                     AS `total_available`,
+                                                       (select count(0)
+                                                        from `gs_competition_player`
+                                                        where (`gs_competition_player`.`fk_competition` = `c`.`id`)) AS `total_registered`,
+                                                       `c`.`status`                                                                    AS `competition_status`,
+                                                       `c`.`competition_type`                                                          AS `competition_type`,
+                                                       'Closed'                                                                        AS `registration_status`,
+                                                       5                                                                               AS `sort_order`,
+                                                       (curdate() - `c`.`date_end`)                                                    AS `date_order`,
+                                                       `c`.`tournament_description`                                                    AS `tournament_description`,
+                                                       `c`.`tournament_fee`                                                            AS `tournament_fee`,
+                                                       `c`.`tournament_rules`                                                          AS `tournament_rules`,
+                                                       `c`.`tournament_prize_total`                                                    AS `tournament_prize_total`,
+                                                       `c`.`allow_gps`                                                                 AS `allow_gps`,
+                                                       `c`.`max_player`                                                                AS `max_player`,
+                                                       `c`.`max_round`                                                                 AS `max_round`,
+                                                       `c`.`max_hole`                                                                  AS `max_hole`,
+                                                       `c`.`show_leaderboard`                                                          AS `show_leaderboard`,
+                                                       `c`.`allow_change_scorer`                                                       AS `allow_change_scorer`,
+                                                       `c`.`is_private`                                                                AS `is_private`,
+                                                       `c`.`is_team_event`                                                             AS `is_team_event`
+                                                from (`gs_competition` `c` left join `gs_scoring_format` `s` on ((
+                                                  `c`.`fk_scoring_format` = `s`.`id`)))
+                                                where (`c`.`status` = 'Completed')
+                                      union all select `c`.`id`                                                                        AS `id`,
+                                                       `c`.`fk_club`                                                                   AS `fk_club`,
+                                                       `c`.`fk_organizer`                                                              AS `fk_organizer`,
+                                                       `c`.`tournament_name`                                                           AS `tournament_name`,
+                                                       `c`.`tournament_image`                                                          AS `tournament_image`,
+                                                       `c`.`date_open`                                                                 AS `date_open`,
+                                                       `c`.`date_close`                                                                AS `date_close`,
+                                                       `c`.`date_start`                                                                AS `date_start`,
+                                                       `c`.`date_end`                                                                  AS `date_end`,
+                                                       `c`.`date_publish`                                                              AS `date_publish`,
+                                                       `s`.`name`                                                                      AS `scoring_format`,
+                                                       ifnull(`c`.`max_player`, 0)                                                     AS `total_available`,
+                                                       (select count(0)
+                                                        from `gs_competition_player`
+                                                        where (`gs_competition_player`.`fk_competition` = `c`.`id`)) AS `total_registered`,
+                                                       `c`.`status`                                                                    AS `competition_status`,
+                                                       `c`.`competition_type`                                                          AS `competition_type`,
+                                                       'Closed'                                                                        AS `registration_status`,
+                                                       5                                                                               AS `sort_order`,
+                                                       (curdate() - `c`.`date_start`)                                                  AS `date_order`,
+                                                       `c`.`tournament_description`                                                    AS `tournament_description`,
+                                                       `c`.`tournament_fee`                                                            AS `tournament_fee`,
+                                                       `c`.`tournament_rules`                                                          AS `tournament_rules`,
+                                                       `c`.`tournament_prize_total`                                                    AS `tournament_prize_total`,
+                                                       `c`.`allow_gps`                                                                 AS `allow_gps`,
+                                                       `c`.`max_player`                                                                AS `max_player`,
+                                                       `c`.`max_round`                                                                 AS `max_round`,
+                                                       `c`.`max_hole`                                                                  AS `max_hole`,
+                                                       `c`.`show_leaderboard`                                                          AS `show_leaderboard`,
+                                                       `c`.`allow_change_scorer`                                                       AS `allow_change_scorer`,
+                                                       `c`.`is_private`                                                                AS `is_private`,
+                                                       `c`.`is_team_event`                                                             AS `is_team_event`
+                                                from (`gs_competition` `c` left join `gs_scoring_format` `s` on ((
+                                                  `c`.`fk_scoring_format` = `s`.`id`)))
+                                                where (`c`.`status` = 'Cancelled');
+
