@@ -27,10 +27,6 @@ create table gs_api_audit_log_new
     audit_date         date,
     primary key (id,audit_date)
 ) charset = utf8;
-
-
-update gs_api_audit_log set audit_date = date(audit_date_time) where audit_date is null;
-
 -- insert into gs_api_audit_log_new select *, null from gs_api_audit_log;
 insert into gs_api_audit_log_new select id, audit_date_time,user_id,request_url,
                                         api_type, api_category, api_group, api_operation,
@@ -87,8 +83,6 @@ create table gs_api_audit_log_new
         );
 -- Insert the rows into new table
 -- insert into gs_api_audit_log_new select *, null from gs_api_audit_log;
-
-update gs_api_audit_log set audit_date = date(audit_date_time) where audit_date is null;
 
 insert into gs_api_audit_log_new select id, audit_date_time,user_id,request_url,
                                         api_type, api_category, api_group, api_operation,

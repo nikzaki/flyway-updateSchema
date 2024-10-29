@@ -551,7 +551,6 @@ alter table gs_stay_and_play_package add column  non_local_price  char(1) NOT NU
 alter table gs_stay_and_play_adjustment add column is_tax char(1) NOT NULL default 'N' CHECK ( is_tax in ('Y', 'N') );
 
 -- League: Order Of Merit
-ALTER TABLE gs_league_season add column league_settings mediumtext;
 CREATE TABLE gs_league_competition_player_totals (
     id                       int(10) NOT NULL AUTO_INCREMENT,
     handicap                 smallint(6),

@@ -666,12 +666,12 @@ WHERE gs_scorecard.game_hole_no is null;
 -- WHERE scorecard_count > 0 AND game_course_hole <> scorecard_count;
 
 -- Change the unique index
-alter table gs_scorecard
-    drop key IDX_gs_scorecard;
+-- alter table gs_scorecard
+--     drop key IDX_gs_scorecard;
 
-alter table gs_scorecard
-    add constraint IDX_gs_scorecard
-        unique (fk_player_round, game_hole_no);
+-- alter table gs_scorecard
+--     add constraint IDX_gs_scorecard
+--         unique (fk_player_round, game_hole_no);
 
 -- 27-Sep-2024: eInvoice for players
 ALTER TABLE gs_player add column e_invoice_option char(1) DEFAULT 'N' NOT NULL;

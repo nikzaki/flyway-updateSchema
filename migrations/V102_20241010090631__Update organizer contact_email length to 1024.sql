@@ -1,0 +1,1 @@
+ALTER TABLE gs_organizer MODIFY contact_email varchar(1024);
