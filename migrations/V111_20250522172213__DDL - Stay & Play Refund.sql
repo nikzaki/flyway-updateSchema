@@ -1,4 +1,4 @@
-- Add partner to Bill.
+-- Add partner to Bill.
 
 alter table gs_bill add column fk_partner varchar(30);
 ALTER TABLE gs_bill ADD CONSTRAINT fk_bill_ref_partner
