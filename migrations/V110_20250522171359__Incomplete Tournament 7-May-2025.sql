@@ -1,0 +1,1 @@
+ALTER TABLE gs_scorecard add column ignored_in_finalization char(1) default 'N';
