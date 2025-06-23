@@ -1,0 +1,1 @@
+ALTER TABLE gs_competition_sponsor add column display_sequence smallint default 1;
