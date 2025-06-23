@@ -1,0 +1,1 @@
+alter table gs_api_audit_log add index idx_api_category (api_category, reference);

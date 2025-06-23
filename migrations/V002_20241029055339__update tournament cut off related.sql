@@ -1,0 +1,6 @@
+-- 28-OCT-2024
+-- alter table gs_game_round add column locked char(1) DEFAULT 'Y' NOT NULL;
+-- alter table gs_game_round add column cut_off_rules mediumtext;
+-- alter table gs_game_round add column flight_generation_rules mediumtext;
+-- alter table gs_competition add column statistics mediumtext;
+-- alter table gs_competition_player add column group_name varchar(255);
