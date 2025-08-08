@@ -3,7 +3,7 @@ id = "0cb0d59a-0b5b-4927-8781-3a5ccacedaa6"
 name = "updateCls3"
 
 [flyway]
-locations = [ "filesystem:migrations" ]
+locations = [ "filesystem:wagc_phase1" ]
 mixed = true
 outOfOrder = true
 schemaModelLocation = "schema-model"
