@@ -1,5 +1,3 @@
-
--- 29-Jul-2025
 create or replace view gv_league_season_participant as
     select lr.id,
            lr.fk_player,
@@ -15,7 +13,9 @@ create or replace view gv_league_season_participant as
            auth_create.name created_by_name,
            ai.last_updated_by,
            auth_update.name updated_by_name,
-           lstp.fk_league_season_team fk_team
+           lstp.fk_league_season_team fk_team,
+           lr.handicap,
+           lr.handicap_index
     FROM gs_league_roster lr
              LEFT JOIN gs_league_season_team_player lstp
                        ON lstp.fk_league_roster = lr.id
@@ -41,7 +41,9 @@ create or replace view gv_league_season_participant as
            auth_create.name created_by_name,
            ai.last_updated_by,
            auth_update.name updated_by_name,
-           null as fk_team
+           null as fk_team,
+           null as handicap,
+           null as handicap_index
     FROM gs_league_season_guest sg
              LEFT JOIN gs_competition_player_addl_info ai
                        ON ai.fk_league_season = sg.fk_league_season AND ai.fk_player = sg.fk_player
