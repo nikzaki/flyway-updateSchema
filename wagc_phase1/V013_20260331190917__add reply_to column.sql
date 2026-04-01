@@ -1,0 +1,1 @@
+ALTER TABLE gs_email_outbox add column reply_to varchar(255);

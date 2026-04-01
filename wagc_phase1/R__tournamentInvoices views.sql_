@@ -1,0 +1,235 @@
+
+-- 30 Dec 2025
+create or replace view gv_club_transaction_type as
+    select concat_ws('_', club.id, tt.id) trxn_type_key,  club.id club_id, club_name,
+           tt.id transaction_type_id, tt.name transaction_type_name, tt.debit_or_credit, tt.description,
+           if(tt.fk_club is null, 'Y', 'N') system_transaction_type, tt.used_for,
+           ttcm.club_transaction_type,
+           ttcm.debit_account_code, ttcm.credit_account_code,
+           tt.fk_transaction_group, gs_transaction_group.name transaction_group_name
+    FROM gs_transaction_type tt
+             JOIN gs_club club ON club.id = tt.fk_club OR tt.fk_club is null
+             LEFT JOIN gs_transaction_group ON gs_transaction_group.id = tt.fk_transaction_group
+             LEFT JOIN gs_transaction_type_club_map ttcm ON ttcm.fk_transaction_type = tt.id AND ttcm.fk_club = club.id
+    WHERE EXISTS(
+        SELECT 'X' FROM gs_club_external_interface cei
+                            JOIN gs_external_system es ON es.id = cei.fk_external_system
+        WHERE cei.fk_club = club.id AND es.system_type = 'ACCOUNTING'
+    );
+
+
+    
+CREATE OR REPLACE VIEW gv_user_authentication AS
+    SELECT
+        auth.id, auth.user_name, auth.password, auth.encryption_algorithm,
+        auth.salt, auth.combine_username, auth.email, auth.phone, auth.is_active,
+        auth.name, auth.token_key, auth.account_delete_request,
+        auth.delete_requested_on, auth.account_deleted, auth.deleted_on,
+
+        -- 1. Pulled from our single Pivoted Role derived table
+        roles.user_roles,
+        roles.is_admin,
+
+        roles.user_club_id,
+        clb.club_name AS user_club_name,
+
+        roles.user_club_group_id,
+        cg.name AS user_club_group_name,
+        roles.clubs_allowed,
+
+        roles.user_organizer_id,
+        org.name AS user_organizer_name,
+
+        roles.user_partner_id,
+        par.name AS user_partner_name,
+
+        -- 2. From standard JOINs
+        pl.id AS player_id,
+        pl.player_name AS user_player_name,
+
+        prof.salutation, prof.first_name, prof.last_name, prof.name profile_name, prof.profile_image, prof.photo,
+        prof.gender, prof.date_of_birth, prof.occupation, prof.religion,
+        prof.race, prof.married, prof.marriage_date,
+        prof.share_with_club, prof.share_with_others, prof.fk_nationality,
+
+        addr.address_name,
+
+        ad.fk_country, ad.address_line_1, ad.address_line_2, ad.city,
+        ad.postal_code, ad.state_province, ad.phone_numbers, ad.fax, ad.website
+
+    FROM gs_authentication auth
+
+-- 3. THE FIX: Read gs_user_role ONCE and pivot the IDs and flags
+             LEFT JOIN (
+        SELECT
+            fk_authentication,
+            GROUP_CONCAT(fk_role) AS user_roles,
+            MAX(IF(fk_role = 'ROLE_ADMIN', 'Y', NULL)) AS is_admin,
+            MAX(IF(fk_role = 'ROLE_CLUB', fk_club, NULL)) AS user_club_id,
+            MAX(IF(fk_role = 'ROLE_CLUB_GROUP', fk_club_group, NULL)) AS user_club_group_id,
+            MAX(IF(fk_role = 'ROLE_ORGANIZER', fk_organizer, NULL)) AS user_organizer_id,
+            MAX(IF(fk_role = 'ROLE_PARTNER', fk_partner, NULL)) AS user_partner_id,
+            MAX(IF(fk_role = 'ROLE_CLUB_GROUP', clubs_allowed, NULL)) AS clubs_allowed
+        FROM gs_user_role
+        GROUP BY fk_authentication
+    ) roles ON roles.fk_authentication = auth.id
+
+-- 4. Clean LEFT JOINs to get the names using the IDs we just pivoted
+             LEFT JOIN gs_club clb ON clb.id = roles.user_club_id
+             LEFT JOIN gs_club_group cg ON cg.id = roles.user_club_group_id
+             LEFT JOIN gs_organizer org ON org.id = roles.user_organizer_id
+             LEFT JOIN gs_discount_company par ON par.id = roles.user_partner_id
+
+-- 5. Existing 1:1 data joins (Unchanged, already optimal)
+             LEFT JOIN gs_player pl ON pl.fk_authentication = auth.id
+             LEFT JOIN gs_user_profile prof ON prof.fk_user = auth.id
+             LEFT JOIN gs_user_address addr ON addr.fk_user = auth.id AND addr.default_address = 'Y'
+             LEFT JOIN gs_address ad ON ad.id = addr.fk_address;
+
+
+# create or replace view gv_user_profile AS
+#     SELECT auth.id user_id, auth.user_name, auth.name auth_name, auth.email, auth.is_active,
+#            uf.salutation, uf.first_name, uf.last_name, uf.name profile_name, uf.profile_image,
+#            uf.gender, uf.date_of_birth, uf.occupation, uf.religion, uf.race,
+#            uf.married, uf.marriage_date, uf.photo, uf.fk_nationality, uf.share_with_club, uf.share_with_others,
+#            ua.fk_address, address_name,
+#            (SELECT id FROM gs_player pl WHERE pl.fk_authentication = auth.id LIMIT 1) player_id,
+#            (SELECT fk_club FROM  gs_user_role ur WHERE ur.fk_authentication = auth.id AND fk_role = 'ROLE_CLUB') club_id,
+#            (SELECT fk_club_group FROM  gs_user_role ur WHERE ur.fk_authentication = auth.id AND fk_role = 'ROLE_CLUB_GROUP') club_group_id,
+#            (SELECT cg.name FROM gs_user_role ur LEFT JOIN gs_club_group cg ON ur.fk_club_group = cg.id  WHERE ur.fk_authentication = auth.id AND fk_role = 'ROLE_CLUB_GROUP' ) club_group_name,
+#            (SELECT fk_organizer FROM gs_user_role ur WHERE ur.fk_authentication = auth.id AND fk_role = 'ROLE_ORGANIZER') organizer_id,
+#            (SELECT fk_partner FROM gs_user_role ur WHERE ur.fk_authentication = auth.id AND fk_role = 'ROLE_PARTNER') partner_id
+#     FROM gs_authentication auth
+#              LEFT JOIN gs_user_profile uf ON auth.id = uf.fk_user
+#              LEFT JOIN gs_user_address ua ON auth.id = ua.fk_user AND ua.default_address = 'Y';
+
+CREATE OR REPLACE VIEW gv_user_profile AS
+    SELECT
+        auth.id AS user_id,
+        auth.user_name,
+        auth.name AS auth_name,
+        auth.email,
+        auth.is_active,
+
+        uf.salutation,
+        uf.first_name,
+        uf.last_name,
+        uf.name AS profile_name,
+        uf.profile_image,
+        uf.gender,
+        uf.date_of_birth,
+        uf.occupation,
+        uf.religion,
+        uf.race,
+        uf.married,
+        uf.marriage_date,
+        uf.photo,
+        uf.fk_nationality,
+        uf.share_with_club,
+        uf.share_with_others,
+
+        ua.fk_address,
+        ua.address_name,
+
+        pl.player_id,
+
+        roles.club_id,
+        roles.club_group_id,
+        cg.name AS club_group_name,
+        roles.organizer_id,
+        roles.partner_id
+
+    FROM gs_authentication auth
+
+-- 1. Standard joins for 1:1 user profile and address data
+             LEFT JOIN gs_user_profile uf ON auth.id = uf.fk_user
+             LEFT JOIN gs_user_address ua ON auth.id = ua.fk_user AND ua.default_address = 'Y'
+
+        -- 2. Safely get the Player ID (Replaces the LIMIT 1 subquery)
+-- Using MIN(id) + GROUP BY guarantees we only get 1 row per user, preventing duplicates
+             LEFT JOIN (
+        SELECT fk_authentication, MIN(id) AS player_id
+        FROM gs_player
+        GROUP BY fk_authentication
+    ) pl ON pl.fk_authentication = auth.id
+
+-- 3. Read the Role table exactly ONCE and pivot the data
+             LEFT JOIN (
+        SELECT
+            fk_authentication,
+            MAX(IF(fk_role = 'ROLE_CLUB', fk_club, NULL)) AS club_id,
+            MAX(IF(fk_role = 'ROLE_CLUB_GROUP', fk_club_group, NULL)) AS club_group_id,
+            MAX(IF(fk_role = 'ROLE_ORGANIZER', fk_organizer, NULL)) AS organizer_id,
+            MAX(IF(fk_role = 'ROLE_PARTNER', fk_partner, NULL)) AS partner_id
+        FROM gs_user_role
+        GROUP BY fk_authentication
+    ) roles ON roles.fk_authentication = auth.id
+
+-- 4. Cleanly get the Club Group Name using the ID we just pivoted
+             LEFT JOIN gs_club_group cg ON cg.id = roles.club_group_id;
+
+
+CREATE OR REPLACE VIEW gv_consolidated_product_package AS
+    SELECT pkg.*
+    FROM gs_product_package pkg
+             JOIN gs_club club ON club.id = pkg.fk_club
+             LEFT JOIN gs_product_price prod_price ON prod_price.fk_product_package = pkg.id AND prod_price.start_date <= CURDATE() AND prod_price.end_date >= CURDATE()
+    WHERE pkg.consolidated_price = 'Y';
+
+
+
+create or replace view gv_league_season_participant as
+    select lr.id,
+           lr.fk_player,
+           lr.fk_league_season,
+           fk_player_group,
+           fk_competition_stream,
+           lr.fk_competition_player_category,
+           'player' as participation_type,
+           ai.additional_info,
+           ai.created_at,
+           ai.last_updated_at,
+           ai.created_by,
+           auth_create.name created_by_name,
+           ai.last_updated_by,
+           auth_update.name updated_by_name,
+           lstp.fk_league_season_team fk_team,
+           lr.handicap,
+           lr.handicap_index,
+           lr.fk_participating_club
+    FROM gs_league_roster lr
+             LEFT JOIN gs_league_season_team_player lstp
+                       ON lstp.fk_league_roster = lr.id
+
+             LEFT JOIN gs_competition_player_addl_info ai
+                       ON ai.fk_league_season = lr.fk_league_season AND ai.fk_player = lr.fk_player
+             LEFT JOIN gs_authentication auth_create
+                       ON ai.created_by = auth_create.id
+             LEFT JOIN gs_authentication auth_update
+                       ON ai.last_updated_by = auth_update.id
+    UNION
+    SELECT sg.id,
+           sg.fk_player,
+           sg.fk_league_season,
+           fk_player_group,
+           null    as fk_competition_stream,
+           null    as fk_competition_player_category,
+           'guest' as participation_type,
+           additional_info,
+           ai.created_at,
+           ai.last_updated_at,
+           ai.created_by,
+           auth_create.name created_by_name,
+           ai.last_updated_by,
+           auth_update.name updated_by_name,
+           null as fk_team,
+           null as handicap,
+           null as handicap_index,
+           sg.fk_participating_club
+    FROM gs_league_season_guest sg
+             LEFT JOIN gs_competition_player_addl_info ai
+                       ON ai.fk_league_season = sg.fk_league_season AND ai.fk_player = sg.fk_player
+             LEFT JOIN gs_authentication auth_create
+                       ON ai.created_by = auth_create.id
+             LEFT JOIN gs_authentication auth_update
+                       ON ai.last_updated_by = auth_update.id;
