@@ -1,0 +1,1 @@
+ALTER TABLE gs_hotel_room MODIFY room_specification mediumtext;
