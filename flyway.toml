@@ -2,27 +2,27 @@ databaseType = "MySql"
 id = "0cb0d59a-0b5b-4927-8781-3a5ccacedaa6"
 name = "updateCls3"
 
+[environments.betaprd_app]
+displayName = "mygolf2_betaprd_new_app"
+schemas = [ "mygolf2_betaprd_new_app" ]
+url = "jdbc:mysql://100.102.88.57"
+
 [flyway]
+callbackLocations = [ "filesystem:callbacks" ]
 locations = [ "filesystem:wagc_phase1" ]
 mixed = true
 outOfOrder = true
 schemaModelLocation = "schema-model"
 validateMigrationNaming = true
 
-  [flyway.check]
-  majorTolerance = 0
-
 [flywayDesktop]
 developmentEnvironment = "development"
 shadowEnvironment = "shadow"
+showDeploymentDecision = false
+enableMigrations = true
 
 [redgateCompare]
 filterFile = "filter.rgf"
 
 [redgateCompare.mysql.options.ignores]
 ignoreNewlinesInTextObjects = "off"
-
-[environments.betaprd_app]
-url = "jdbc:mysql://100.102.88.57"
-schemas = [ "mygolf2_betaprd_new_app" ]
-displayName = "mygolf2_betaprd_new_app"

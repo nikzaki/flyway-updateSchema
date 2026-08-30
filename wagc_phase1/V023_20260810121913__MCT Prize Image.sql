@@ -1,0 +1,1 @@
+ALTER TABLE gs_league_season_prize ADD COLUMN image VARCHAR(1024);
